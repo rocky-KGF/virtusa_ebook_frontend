@@ -9,6 +9,8 @@ import {
   FormGroup,
   FormControl,
 } from "react-bootstrap";
+import { useHistory } from "react-router";
+import { logIn, signUp } from "../api";
 
 const Main = () => {
   const [username, setUsername] = useState("");
@@ -16,7 +18,16 @@ const Main = () => {
   const [email, setEmail] = useState("");
   const [mobilenumber, setMobilenumber] = useState();
   const [confirmpassword, setConfirmpassword] = useState("");
-  const [signIn, setSignIn] = useState(false);
+  const [signIn, setSignIn] = useState(true);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(
+    false
+  );
+  const history = useHistory();
+
+  const pv = {
+    color: isPasswordVisible ? "rgb(255, 30, 0)" : "black",
+  };
 
   const logoPic = {
     height: "50%",
@@ -27,6 +38,21 @@ const Main = () => {
 
   const loginCard = {
     border: "none",
+  };
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    const user = await logIn(username, password);
+    if (user.error) alert("Try again later");
+    else {
+      localStorage.setItem("user", user.user);
+      history.push("/home");
+    }
+  };
+
+  const handleSignUp = (e) => {
+    e.preventDefault();
+    signUp(email, username, mobilenumber, password);
   };
 
   return (
@@ -47,12 +73,11 @@ const Main = () => {
             flexDirection: "column",
             justifyContent: "center",
           }}
+          className="log-in-col"
         >
           <img style={logoPic} src="Logo,jpg.png" alt="" />
           <Card style={loginCard}>
-            <Card.Title style={{ marginTop: "5%" }} className="text-center">
-              Login to Neo
-            </Card.Title>
+            <Card.Title className="text-center">Login to Neo</Card.Title>
             <Card.Body>
               {signIn ? (
                 <Form>
@@ -69,18 +94,30 @@ const Main = () => {
                     <FormControl
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      type="password"
+                      type={isPasswordVisible ? "text" : "password"}
                     ></FormControl>
+                    <span
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                      style={pv}
+                      className={
+                        "p-v fa " +
+                        (isPasswordVisible ? "fa-eye" : "fa-eye-slash")
+                      }
+                    ></span>
                   </FormGroup>
                   <FormGroup>
-                    <button className="signin-btn">Sign In</button>
+                    <button className="signin-btn" onClick={handleSignIn}>
+                      Sign In
+                    </button>
                   </FormGroup>
                   <FormGroup>
-                    <FormLabel style={{ marginLeft: "auto" }}>
-                      New to Neo Store?{" "}
+                    <FormLabel className="signin-link">
                       <span
-                        className="signin-link"
-                        onClick={() => setSignIn(false)}
+                        onClick={() => {
+                          setSignIn(false);
+                          setIsPasswordVisible(false);
+                          setIsConfirmPasswordVisible(false);
+                        }}
                       >
                         Create an account
                       </span>
@@ -118,26 +155,53 @@ const Main = () => {
                     <FormControl
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      type="password"
+                      type={isPasswordVisible ? "text" : "password"}
                     ></FormControl>
+                    <span
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                      style={pv}
+                      className={
+                        "p-v fa " +
+                        (isPasswordVisible ? "fa-eye" : "fa-eye-slash")
+                      }
+                    ></span>
                   </FormGroup>
                   <FormGroup>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl
                       value={confirmpassword}
                       onChange={(e) => setConfirmpassword(e.target.value)}
-                      type="password"
+                      type={isConfirmPasswordVisible ? "text" : "password"}
                     ></FormControl>
+                    <span
+                      onClick={() =>
+                        setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                      }
+                      style={{
+                        color: isConfirmPasswordVisible
+                          ? "rgb(255, 30, 0)"
+                          : "black",
+                      }}
+                      className={
+                        "p-v fa " +
+                        (isConfirmPasswordVisible ? "fa-eye" : "fa-eye-slash")
+                      }
+                    ></span>
                   </FormGroup>
                   <FormGroup>
-                    <button className="signin-btn">Sign Up</button>
+                    <button className="signin-btn" onClick={handleSignUp}>
+                      Sign Up
+                    </button>
                   </FormGroup>
                   <FormGroup>
-                    <FormLabel className="text-center">
+                    <FormLabel className="signin-link">
                       Already a member?{" "}
                       <span
-                        className="signin-link"
-                        onClick={() => setSignIn(true)}
+                        onClick={() => {
+                          setSignIn(true);
+                          setIsPasswordVisible(false);
+                          setIsConfirmPasswordVisible(false);
+                        }}
                       >
                         Click Here
                       </span>
