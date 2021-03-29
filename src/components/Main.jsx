@@ -1,16 +1,10 @@
 import React, { useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Form,
-  FormLabel,
-  FormGroup,
-  FormControl,
-} from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import { useHistory } from "react-router";
 import { logIn, signUp } from "../api";
+import { updateUser } from "../redux/actions/user";
+import Login from "./Login/Login";
+import Signup from "./Signup/Signup";
 
 const Main = () => {
   const [username, setUsername] = useState("");
@@ -42,17 +36,39 @@ const Main = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    const user = await logIn(username, password);
-    if (user.error) alert("Try again later");
+    if (password.length < 3) {
+      alert("Password should contain at least 3 characters.");
+      return;
+    }
+    const res = await logIn(username, password);
+    if (res.error) alert("Try again later");
     else {
-      localStorage.setItem("user", user.user);
-      history.push("/home");
+      if (res.status) {
+        updateUser(res.user);
+        history.push("/home");
+      } else {
+        alert("Username or Password is incorrect");
+      }
     }
   };
 
   const handleSignUp = (e) => {
     e.preventDefault();
-    signUp(email, username, mobilenumber, password);
+    if (password.length < 3) {
+      alert("Password should contain at least 3 characters.");
+      return;
+    }
+    if (confirmpassword !== password)
+      alert("Password and Cofirm Password should be same.");
+    else if (mobilenumber.length !== 10 || mobilenumber[0] === 0)
+      alert("Enter a valid mobile number.");
+    else {
+      const res = signUp(email, username, mobilenumber, password);
+      if (res.status) alert("Account has been successfully created!");
+      else if (res.err === "username") alert("Username is already taken");
+      else if (res.err === "email")
+        alert("An account exists with the given email.");
+    }
   };
 
   return (
@@ -80,134 +96,37 @@ const Main = () => {
             <Card.Title className="text-center">Login to Neo</Card.Title>
             <Card.Body>
               {signIn ? (
-                <Form>
-                  <FormGroup>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      type="text"
-                    ></FormControl>
-                  </FormGroup>
-                  <FormGroup>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      type={isPasswordVisible ? "text" : "password"}
-                    ></FormControl>
-                    <span
-                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                      style={pv}
-                      className={
-                        "p-v fa " +
-                        (isPasswordVisible ? "fa-eye" : "fa-eye-slash")
-                      }
-                    ></span>
-                  </FormGroup>
-                  <FormGroup>
-                    <button className="signin-btn" onClick={handleSignIn}>
-                      Sign In
-                    </button>
-                  </FormGroup>
-                  <FormGroup>
-                    <FormLabel className="signin-link">
-                      <span
-                        onClick={() => {
-                          setSignIn(false);
-                          setIsPasswordVisible(false);
-                          setIsConfirmPasswordVisible(false);
-                        }}
-                      >
-                        Create an account
-                      </span>
-                    </FormLabel>
-                  </FormGroup>
-                </Form>
+                <Login
+                  username={username}
+                  password={password}
+                  setSignIn={setSignIn}
+                  setUsername={setUsername}
+                  setPassword={setPassword}
+                  pv={pv}
+                  isPasswordVisible={isPasswordVisible}
+                  setIsConfirmPasswordVisible={setIsConfirmPasswordVisible}
+                  setIsPasswordVisible={setIsPasswordVisible}
+                  handleSignIn={handleSignIn}
+                />
               ) : (
-                <Form>
-                  <FormGroup>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      type="email"
-                    ></FormControl>
-                  </FormGroup>
-                  <FormGroup>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      type="text"
-                    ></FormControl>
-                  </FormGroup>
-                  <FormGroup>
-                    <FormLabel>Mobile Number</FormLabel>
-                    <FormControl
-                      value={mobilenumber}
-                      onChange={(e) => setMobilenumber(e.target.value)}
-                      type="text"
-                    ></FormControl>
-                  </FormGroup>
-                  <FormGroup>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      type={isPasswordVisible ? "text" : "password"}
-                    ></FormControl>
-                    <span
-                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                      style={pv}
-                      className={
-                        "p-v fa " +
-                        (isPasswordVisible ? "fa-eye" : "fa-eye-slash")
-                      }
-                    ></span>
-                  </FormGroup>
-                  <FormGroup>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl
-                      value={confirmpassword}
-                      onChange={(e) => setConfirmpassword(e.target.value)}
-                      type={isConfirmPasswordVisible ? "text" : "password"}
-                    ></FormControl>
-                    <span
-                      onClick={() =>
-                        setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
-                      }
-                      style={{
-                        color: isConfirmPasswordVisible
-                          ? "rgb(255, 30, 0)"
-                          : "black",
-                      }}
-                      className={
-                        "p-v fa " +
-                        (isConfirmPasswordVisible ? "fa-eye" : "fa-eye-slash")
-                      }
-                    ></span>
-                  </FormGroup>
-                  <FormGroup>
-                    <button className="signin-btn" onClick={handleSignUp}>
-                      Sign Up
-                    </button>
-                  </FormGroup>
-                  <FormGroup>
-                    <FormLabel className="signin-link">
-                      Already a member?{" "}
-                      <span
-                        onClick={() => {
-                          setSignIn(true);
-                          setIsPasswordVisible(false);
-                          setIsConfirmPasswordVisible(false);
-                        }}
-                      >
-                        Click Here
-                      </span>
-                    </FormLabel>
-                  </FormGroup>
-                </Form>
+                <Signup
+                  email={email}
+                  username={username}
+                  password={password}
+                  confirmpassword={confirmpassword}
+                  setSignIn={setSignIn}
+                  setEmail={setEmail}
+                  setUsername={setUsername}
+                  setMobilenumber={setMobilenumber}
+                  setPassword={setPassword}
+                  setConfirmpassword={setConfirmpassword}
+                  pv={pv}
+                  isPasswordVisible={isPasswordVisible}
+                  isConfirmPasswordVisible={isConfirmPasswordVisible}
+                  setIsConfirmPasswordVisible={setIsConfirmPasswordVisible}
+                  setIsPasswordVisible={setIsPasswordVisible}
+                  handleSignUp={handleSignUp}
+                />
               )}
             </Card.Body>
           </Card>
