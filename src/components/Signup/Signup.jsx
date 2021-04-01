@@ -21,7 +21,7 @@ const Signup = ({
   pv,
 }) => {
   return (
-    <Form>
+    <Form className="form">
       <FormGroup>
         <FormLabel>Email</FormLabel>
         <FormControl

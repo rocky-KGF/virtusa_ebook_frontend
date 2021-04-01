@@ -44,13 +44,13 @@ button.signin-btn:hover {
   cursor: pointer;
 }
 
-.log-in-col input {
+.form input {
   border: none;
   border-bottom: 1px solid black;
   border-radius: 0;
 }
 
-.log-in-col input:focus {
+.form input:focus {
   outline: currentColor;
   box-shadow: 0 0.1rem rgb(255, 30, 0);
   transition: all 0.3s ease-in;
@@ -67,4 +67,53 @@ button.signin-btn:hover {
   bottom: 25%;
   font-size: 1.1rem;
   cursor: pointer;
+}
+
+body,
+html {
+  background: linear-gradient(#2193b0, #6dd5ed);
+  min-height: 100vh;
+}
+
+.admin-main {
+  color: white;
+}
+
+.admin-modal .modal-title {
+  text-align: center;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  background: #47d3f3;
+}
+
+.admin-modal input {
+  background: none;
+}
+
+.admin-modal input:focus {
+  background: none;
+  box-shadow: 0 0.1rem rgb(13, 10, 224);
+  transition: all 0.3s ease-in;
+  border: none;
+}
+
+.modal-body {
+  color: rgb(5, 4, 4);
+  background: #68d9f3;
+}
+
+.admin-modal button {
+  border: none;
+  background: rgb(34, 121, 235);
+  border-radius: 30px;
+  font-weight: 500;
+  color: white;
+  padding: 2% 4%;
+  min-width: 100px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.admin-modal button:hover {
+  background: rgb(74, 137, 219);
 }
