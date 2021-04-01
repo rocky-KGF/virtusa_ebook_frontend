@@ -43,7 +43,7 @@ const Main = () => {
     const res = await logIn(username, password);
     if (res.error) alert("Try again later");
     else {
-      if (res.status) {
+      if (res.status==="true") {
         updateUser(res.user);
         history.push("/home");
       } else {

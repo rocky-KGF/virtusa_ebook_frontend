@@ -13,9 +13,11 @@ export const logIn = async (username, password) => {
   })
     .then((res) => res.json())
     .then((res) => {
+      
       return res;
     })
     .catch((err) => ({ error: true }));
+    console.log(res)
   return res;
 };
 
