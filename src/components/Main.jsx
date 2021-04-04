@@ -1,12 +1,16 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { useHistory } from "react-router";
-import { logIn, signUp } from "../api";
+import { getAllAdminData, logIn, signUp } from "../api";
 import { updateUser } from "../redux/actions/user";
 import Login from "./Login/Login";
 import Signup from "./Signup/Signup";
+import { uploadOrders } from "../redux/actions/orders";
 
 const Main = () => {
+  const history = useHistory();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -17,7 +21,7 @@ const Main = () => {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(
     false
   );
-  const history = useHistory();
+  const dispatch = useDispatch();
 
   const pv = {
     color: isPasswordVisible ? "rgb(255, 30, 0)" : "black",
@@ -43,9 +47,17 @@ const Main = () => {
     const res = await logIn(username, password);
     if (res.error) alert("Try again later");
     else {
-      if (res.status==="true") {
-        updateUser(res.user);
-        history.push("/home");
+      if (res.status) {
+        localStorage.setItem("neo-user", res.user);
+        localStorage.setItem("neo-user-token", res.token);
+        if (res.admin) {
+          localStorage.setItem("neo-admin", "true");
+          const data = await getAllAdminData();
+          dispatch({ type: "GET_PRODUCTS", payload: data.products });
+          dispatch(uploadOrders(data.orders));
+        }
+        dispatch(updateUser(res.user));
+        history.push("/");
       } else {
         alert("Username or Password is incorrect");
       }
@@ -97,35 +109,39 @@ const Main = () => {
             <Card.Body>
               {signIn ? (
                 <Login
-                  username={username}
-                  password={password}
-                  setSignIn={setSignIn}
-                  setUsername={setUsername}
-                  setPassword={setPassword}
-                  pv={pv}
-                  isPasswordVisible={isPasswordVisible}
-                  setIsConfirmPasswordVisible={setIsConfirmPasswordVisible}
-                  setIsPasswordVisible={setIsPasswordVisible}
-                  handleSignIn={handleSignIn}
+                  {...{
+                    username,
+                    password,
+                    setSignIn,
+                    setUsername,
+                    setPassword,
+                    pv,
+                    isPasswordVisible,
+                    setIsConfirmPasswordVisible,
+                    setIsPasswordVisible,
+                    handleSignIn,
+                  }}
                 />
               ) : (
                 <Signup
-                  email={email}
-                  username={username}
-                  password={password}
-                  confirmpassword={confirmpassword}
-                  setSignIn={setSignIn}
-                  setEmail={setEmail}
-                  setUsername={setUsername}
-                  setMobilenumber={setMobilenumber}
-                  setPassword={setPassword}
-                  setConfirmpassword={setConfirmpassword}
-                  pv={pv}
-                  isPasswordVisible={isPasswordVisible}
-                  isConfirmPasswordVisible={isConfirmPasswordVisible}
-                  setIsConfirmPasswordVisible={setIsConfirmPasswordVisible}
-                  setIsPasswordVisible={setIsPasswordVisible}
-                  handleSignUp={handleSignUp}
+                  {...{
+                    email,
+                    username,
+                    password,
+                    confirmpassword,
+                    setSignIn,
+                    setEmail,
+                    setUsername,
+                    setMobilenumber,
+                    setPassword,
+                    setConfirmpassword,
+                    pv,
+                    isPasswordVisible,
+                    isConfirmPasswordVisible,
+                    setIsConfirmPasswordVisible,
+                    setIsPasswordVisible,
+                    handleSignUp,
+                  }}
                 />
               )}
             </Card.Body>

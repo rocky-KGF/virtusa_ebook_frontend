@@ -15,7 +15,7 @@ const Login = ({
 }) => {
   return (
     <>
-      <Form>
+      <Form className="form">
         <FormGroup>
           <FormLabel>Username</FormLabel>
           <FormControl
