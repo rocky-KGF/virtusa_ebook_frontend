@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { useHistory } from "react-router";
-import { getAllAdminData, logIn, signUp } from "../api";
+import { getAllAdminData, getAllUserData, logIn, signUp } from "../api";
 import { updateUser } from "../redux/actions/user";
 import Login from "./Login/Login";
 import Signup from "./Signup/Signup";
@@ -49,13 +49,18 @@ const Main = () => {
     else {
       if (res.status) {
         localStorage.setItem("neo-user", res.user);
+        localStorage.setItem("neo-user-id", res.id);
         localStorage.setItem("neo-user-token", res.token);
+        var data;
         if (res.admin) {
           localStorage.setItem("neo-admin", "true");
-          const data = await getAllAdminData();
-          dispatch({ type: "GET_PRODUCTS", payload: data.products });
-          dispatch(uploadOrders(data.orders));
+          data = await getAllAdminData();
+        } else {
+          data = await getAllUserData();
+          dispatch({ type: "FILL_CART", payload: data.cart });
         }
+        dispatch({ type: "GET_PRODUCTS", payload: data.products });
+        dispatch(uploadOrders(data.orders));
         dispatch(updateUser(res.user));
         history.push("/");
       } else {

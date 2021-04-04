@@ -1,29 +1,36 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Table } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
 const Orders = () => {
   const orders = useSelector((state) => state.orders);
 
   return (
-    <Container>
-      <Row>
-        <Col sm="2">Order ID</Col>
-        <Col sm="2">User ID</Col>
-        <Col sm="2">Book ID</Col>
-        <Col sm="2">Book Name</Col>
-        <Col sm="2">Quantity</Col>
-        <Col sm="2">Price</Col>
-      </Row>
-      {orders.map((order, idx) => (
-        <Row key={idx}>
-          <Col sm="2">{order["order_id"]}</Col>
-          <Col sm="2">{order["user_id"]}</Col>
-          <Col sm="2">{order["book_id"]}</Col>
-          <Col sm="2">{order["book_name"]}</Col>
-          <Col sm="2">{order.quantity}</Col>
-          <Col sm="2">{order.price}</Col>
-        </Row>
-      ))}
+    <Container className="orders">
+      <Table
+        borderless
+        style={{ color: "white", fontSize: "1.2rem", fontWeight: "bold" }}
+      >
+        <thead>
+          <tr className="row">
+            <td className="col-3">Order ID</td>
+            <td className="col-2">Book ID</td>
+            <td className="col-3">Book Name</td>
+            <td className="col-2">Quantity</td>
+            <td className="col-2">Price</td>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order, idx) => (
+            <tr key={idx} className="row order-body">
+              <td className="col-3">{order["order_id"]}</td>
+              <td className="col-2">{order["book_id"]}</td>
+              <td className="col-3">{order["book_name"]}</td>
+              <td className="col-2">{order.quantity}</td>
+              <td className="col-2">{order.price}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </Container>
   );
 };

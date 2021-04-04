@@ -9,18 +9,67 @@ import {
   FormControl,
 } from "react-bootstrap";
 import { useState } from "react";
+import "./css/userProducts.css";
+import { useDispatch } from "react-redux";
+import { addItemToCart, placeDirectOrder } from "../../api";
 
 const ProductCard = ({ Product }) => {
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
+  const [active, setActive] = useState("");
+  const dispatch = useDispatch();
   const toggleModal = () => {
     setQuantity(0);
     setIsOpen(!isOpen);
   };
 
-  const addToCart = () => {
+  const placeOrder = async (e) => {
+    e.preventDefault();
     if (quantity > Product.stock)
       alert("You cannot order quantity more than the available stock");
+    else {
+      const Order = await placeDirectOrder(Product.book_id);
+      try {
+        if (Order.error) alert("Try again later");
+      } catch {
+        dispatch({
+          type: "ADD_TO_ORDERS",
+          payload: Order,
+        });
+      }
+    }
+    toggleModal();
+  };
+
+  const addToCart = async (e) => {
+    e.preventDefault();
+    if (quantity > Product.stock)
+      alert("You cannot order quantity more than the available stock");
+    else {
+      const status = await addItemToCart(Product.book_id);
+      if (status.error) alert("Try again later");
+      else
+        dispatch({
+          type: "ADD_ITEM_TO_CART",
+          payload: {
+            book_id: Product.book_id,
+            book_name: Product.name,
+            quantity: quantity,
+            price: quantity * parseInt(Product.price),
+          },
+        });
+    }
+    toggleModal();
+  };
+
+  const addToCartModalOpen = () => {
+    setActive("cart");
+    toggleModal();
+  };
+
+  const placeOrderModalOpen = () => {
+    setActive("order");
+    toggleModal();
   };
 
   return (
@@ -39,28 +88,38 @@ const ProductCard = ({ Product }) => {
         </div>
       </Col>
       <Col sm="2">
-        <div className="purchase">
-          <button className="add-to-cart" onClick={toggleModal}>
+        <div className="product-edits">
+          <button className="add-to-cart" onClick={addToCartModalOpen}>
             <span className="fa fa-shopping-cart"></span>
           </button>
-          <button className="place-order">
-            <span className="fa fa-trash"></span>
+          <button className="place-order" onClick={placeOrderModalOpen}>
+            Place Order
           </button>
         </div>
-        <Modal show={isOpen} onHide={toggleModal}>
-          <ModalTitle>Add to Cart</ModalTitle>
+        <Modal className="admin-modal" show={isOpen} onHide={toggleModal}>
+          <ModalTitle>
+            {active === "cart" ? "Add to Cart" : "Place Order"}
+          </ModalTitle>
           <ModalBody>
-            <Form className="form">
+            <Form
+              onSubmit={(e) =>
+                active === "cart" ? addToCart(e) : placeOrder(e)
+              }
+              className="form"
+            >
               <FormGroup>
                 <FormLabel>Quantity</FormLabel>
                 <FormControl
                   type="number"
                   value={quantity}
+                  min={1}
                   onChange={(e) => setQuantity(e.target.value)}
                 ></FormControl>
               </FormGroup>
               <FormGroup>
-                <button onClick={() => addToCart()}>Add</button>
+                <button type="submit">
+                  {active === "cart" ? "Add" : "Place Order"}
+                </button>
               </FormGroup>
             </Form>
           </ModalBody>

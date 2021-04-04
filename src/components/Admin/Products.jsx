@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { addProduct } from "../../redux/actions/products";
 import "./css/products.css";
+import { add_Product } from "../../api";
 
 const Products = () => {
   const products = useSelector((state) => state.products);
@@ -42,9 +43,11 @@ const Products = () => {
     });
   };
 
-  const add_product = (e) => {
+  const add_product = async (e) => {
     e.preventDefault();
-    dispatch(addProduct(product));
+    const status = await add_Product(product);
+    if (status.error) alert("Try again later");
+    else dispatch(addProduct(product));
     toggleModal();
   };
 
