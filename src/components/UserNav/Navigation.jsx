@@ -1,8 +1,11 @@
 import { Navbar, NavbarBrand, Container, Nav, NavLink } from "react-bootstrap";
 import NavbarCollapse from "react-bootstrap/esm/NavbarCollapse";
 import NavbarToggle from "react-bootstrap/esm/NavbarToggle";
+import { useHistory } from "react-router";
+import { logout } from "../../api";
 
 const Navigation = ({ activeElement, setActiveElement }) => {
+  const history = useHistory()
   return (
     <Navbar expand="md" className="bg-info nav-bar" variant="dark">
       <Container>
@@ -41,7 +44,10 @@ const Navigation = ({ activeElement, setActiveElement }) => {
               Orders
             </NavLink>
             <NavLink>
-              <span className="fa fa-sign-out"></span>Log out
+              <span className="fa fa-sign-out" onClick={() => {
+                logout();
+                history.push("/signin");
+              }}></span>Log out 
             </NavLink>
           </Nav>
         </NavbarCollapse>
