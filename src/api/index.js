@@ -1,8 +1,9 @@
 import axios from "axios";
-import api from "./api";
+
+const api = ""
 
 export const logIn = async (username, password) => {
-  const res = await fetch(api + "/login", {
+  const res = await fetch("/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -14,11 +15,11 @@ export const logIn = async (username, password) => {
   })
     .then((res) => res.json())
     .then((res) => {
-      
+
       return res;
     })
     .catch((err) => ({ error: true }));
-    console.log(res)
+  console.log(res)
   return res;
 };
 
@@ -41,15 +42,13 @@ export const signUp = async (email, username, mobilenumber, password) => {
   return res;
 };
 
-const headers = {
-  "Content-Type": "application/json",
-  Authorization: "Bearer " + localStorage.getItem("neo-user-token"),
-};
-
 export const edit_product = async (product) => {
   const status = await axios
     .post(api + "/admin/productEdit/" + product["book_id"], product, {
-      headers: headers,
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+      },
     })
     .then((res) => res.data)
     .catch((err) => ({ error: true }));
@@ -59,7 +58,10 @@ export const edit_product = async (product) => {
 export const add_Product = async (product) => {
   const status = await axios
     .post(api + "/admin/addProduct", product, {
-      headers: headers,
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+      },
     })
     .then((res) => res.data)
     .catch((err) => ({ error: true }));
@@ -68,8 +70,11 @@ export const add_Product = async (product) => {
 
 export const delete_product = async (productId) => {
   const status = await axios
-    .get(api + "/admin/deleteProduct/" + productId, {
-      headers,
+    .get(api + "/admin/delete/" + productId, {
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+      },
     })
     .then((res) => res.data)
     .catch((err) => ({ error: true }));
@@ -79,7 +84,10 @@ export const delete_product = async (productId) => {
 export const getAllProducts = async () => {
   const status = await axios
     .get(api + "/home", {
-      headers,
+      headers:{
+        "Content-Type": "application/json",
+        'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+      },
     })
     .then((res) => res.data)
     .catch((err) => ({ error: true }));
@@ -90,17 +98,19 @@ export const getAllAdminData = async () => {
   var products, orders;
   await axios
     .all([
-      axios.get(api + "/home", { headers }),
-      axios.get(api + "/admin/orders"),
+      axios.get(api + "/home", { headers:{
+        "Content-Type": "application/json",
+        'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+      } }),
+      axios.get(api + "/admin/orders", { headers:{
+        "Content-Type": "application/json",
+        'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+      } }),
     ])
     .then(
       axios.spread((data1, data2) => {
-        console.log(data1)
-        console.log(data2)
         products = data1;
         orders = data2;
-        console.log(products)
-        console.log(orders)
       })
     )
     .catch((err) => ({ error: true }));
@@ -117,11 +127,23 @@ export const getAllUserData = async () => {
   var products, cart, orders;
   await axios
     .all([
-      axios.get(api + "/home", { headers }),
+      axios.get(api + "/home", { headers: {
+        "Content-Type": "application/json",
+        'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+      } }),
       axios.get(`${api}/cart/${localStorage.getItem("neo-user-id")}`, {
-        headers,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+        },
       }),
-      axios.get(api + "/orders", { headers }),
+      axios.get(api + "/orders", {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': "Bearer "+localStorage.getItem("neo-user-token"),
+          id: localStorage.getItem("neo-user-id")
+        }
+      }),
     ])
     .then(
       axios.spread((data1, data2, data3) => {
@@ -133,25 +155,38 @@ export const getAllUserData = async () => {
   return { products, cart, orders };
 };
 
-export const addItemToCart = async (book_id) => {
+export const addItemToCart = async (book_id, quantity) => {
   const status = await axios
-    .post(`${api}/home/${book_id}`, { headers })
+    .post(`${api}/home/${book_id}?quantity=${quantity}`, "", {
+      headers:{
+        "Content-Type": "application/json",
+        'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+      }
+    })
     .then((res) => res.data)
-    .then((err) => ({ error: true }));
+    .catch((err) => ({ error: true }));
   return status;
 };
 
-export const placeDirectOrder = async (book_id) => {
-  const order = await axios
-    .post(api + "/placeOrder", "", { headers, params: { bid: book_id } })
+export const placeDirectOrder = async (order) => {
+  const status = await axios
+    .post(api + "/placeOrder", order, { headers:{
+      "Content-Type": "application/json",
+      'Authorization': "Bearer "+localStorage.getItem("neo-user-token"),
+      id: localStorage.getItem("neo-user-id")
+    } })
     .then((res) => res.data)
     .catch((err) => ({ error: true }));
-  return order;
+  return status;
 };
 
 export const saveOrders = async (cart) => {
   const orders = await axios
-    .post(api + "/saveOrder", cart, { headers })
+    .post(api + "/saveOrder", cart, { headers: {
+      "Content-Type": "application/json",
+      'Authorization': "Bearer "+localStorage.getItem("neo-user-token"),
+      id: localStorage.getItem("neo-user-id")
+    } })
     .then((res) => res.data)
     .catch((err) => ({ error: true }));
   return orders;
@@ -159,8 +194,20 @@ export const saveOrders = async (cart) => {
 
 export const deleteItemFromCart = async (book_id) => {
   const status = await axios
-    .post(api + "/cart/delete", "", { headers, params: { bid: book_id } })
+    .post(api + "/cart/delete", "", { headers:{
+      "Content-Type": "application/json",
+      'Authorization': "Bearer "+localStorage.getItem("neo-user-token")
+    }, params: { bid: book_id } })
     .then((res) => res.data)
     .catch((err) => ({ error: true }));
   return status;
 };
+
+export const getOrdersOfUser = async () => {
+  const status = await axios.get("/orders", { headers:{
+    "Content-Type": "application/json",
+    'Authorization': "Bearer "+localStorage.getItem("neo-user-token"),
+    id: localStorage.getItem("neo-user-id")
+  } }).then(res => res.data).catch(err => ({ error: true }))
+  return status;
+}

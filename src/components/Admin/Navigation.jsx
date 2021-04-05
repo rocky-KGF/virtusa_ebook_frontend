@@ -11,6 +11,7 @@ const Navigation = ({ activeElement, setActiveElement }) => {
   return (
     <Navbar expand="md" className="bg-info nav-bar" variant="dark">
       <Container>
+        <img src="/Logo,jpg.png" alt="" className="nav-bar-img"/>
         <NavbarBrand className="nav-bar-brand">Neo Book Store</NavbarBrand>
         <NavbarToggle className="ml-auto" aria-controls="nav-bar" />
         <NavbarCollapse id="nav-bar">

@@ -13,19 +13,17 @@ const Orders = () => {
         <thead>
           <tr className="row">
             <td className="col-3">Order ID</td>
-            <td className="col-2">Book ID</td>
             <td className="col-3">Book Name</td>
-            <td className="col-2">Quantity</td>
-            <td className="col-2">Price</td>
+            <td className="col-3">Quantity</td>
+            <td className="col-3">Price</td>
           </tr>
         </thead>
         <tbody>
           {orders.map((order, idx) => (
             <tr key={idx} className="row order-body">
               <td className="col-3">{order["order_id"]}</td>
-              <td className="col-2">{order["book_id"]}</td>
               <td className="col-3">{order["book_name"]}</td>
-              <td className="col-2">{order.quantity}</td>
+              <td className="col-3">{order.quantity}</td>
               <td className="col-2">{order.price}</td>
             </tr>
           ))}

@@ -11,7 +11,8 @@ import {
 import { useState } from "react";
 import "./css/userProducts.css";
 import { useDispatch } from "react-redux";
-import { addItemToCart, placeDirectOrder } from "../../api";
+import { addItemToCart, getAllProducts, getOrdersOfUser, placeDirectOrder } from "../../api";
+import { uploadOrders } from "../../redux/actions/orders";
 
 const ProductCard = ({ Product }) => {
   const [quantity, setQuantity] = useState(1);
@@ -25,17 +26,23 @@ const ProductCard = ({ Product }) => {
 
   const placeOrder = async (e) => {
     e.preventDefault();
-    if (quantity > Product.stock)
+    if (quantity > parseInt(Product.stock))
       alert("You cannot order quantity more than the available stock");
     else {
-      const Order = await placeDirectOrder(Product.book_id);
-      try {
-        if (Order.error) alert("Try again later");
-      } catch {
-        dispatch({
-          type: "ADD_TO_ORDERS",
-          payload: Order,
-        });
+      console.log("IN ELSE")
+      const Order = await placeDirectOrder({
+        book_id: Product.book_id,
+        book_name: Product.name,
+        quantity: quantity,
+        price: quantity * parseInt(Product.price),
+      });
+        if (Order.error===true) alert("Try again later");
+       else {
+        const orders = await getOrdersOfUser();
+        const products = await getAllProducts();
+        dispatch({type: "GET_PRODUCTS", payload: products})
+        dispatch(uploadOrders(orders));
+        alert("Your order has been placed successfully")
       }
     }
     toggleModal();
@@ -43,10 +50,10 @@ const ProductCard = ({ Product }) => {
 
   const addToCart = async (e) => {
     e.preventDefault();
-    if (quantity > Product.stock)
+    if (quantity > parseInt(Product.stock))
       alert("You cannot order quantity more than the available stock");
     else {
-      const status = await addItemToCart(Product.book_id);
+      const status = await addItemToCart(Product.book_id, quantity);
       if (status.error) alert("Try again later");
       else
         dispatch({

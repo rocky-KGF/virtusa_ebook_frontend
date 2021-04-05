@@ -9,7 +9,8 @@ const Navigation = ({ activeElement, setActiveElement }) => {
   return (
     <Navbar expand="md" className="bg-info nav-bar" variant="dark">
       <Container>
-        <NavbarBrand>Neo Book Store</NavbarBrand>
+        <img src="/Logo,jpg.png" alt="" className="nav-bar-img"/>
+        <NavbarBrand className="nav-bar-brand">Neo Book Store</NavbarBrand>
         <NavbarToggle className="ml-auto" aria-controls="nav-bar" />
         <NavbarCollapse id="nav-bar">
           <Nav className="ml-auto nav-bar-nav">
@@ -43,11 +44,11 @@ const Navigation = ({ activeElement, setActiveElement }) => {
             >
               Orders
             </NavLink>
-            <NavLink>
-              <span className="fa fa-sign-out" onClick={() => {
+            <NavLink onClick={() => {
                 logout();
                 history.push("/signin");
-              }}></span>Log out 
+              }}>
+              <span className="fa fa-sign-out"></span>Log out 
             </NavLink>
           </Nav>
         </NavbarCollapse>

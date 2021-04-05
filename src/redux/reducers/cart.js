@@ -1,13 +1,6 @@
-const temp = [
-  {
-    book_id: 2,
-    book_name: "Destroyed BSK",
-    quantity: 5,
-    price: 2000,
-  },
-];
 
-export const cart = (state = temp, action) => {
+
+export const cart = (state = [], action) => {
   switch (action.type) {
     case "FILL_CART":
       return action.payload;

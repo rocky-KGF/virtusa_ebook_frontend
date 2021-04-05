@@ -1,10 +1,11 @@
 .nav-bar {
-  height: 10vh;
+  height: 15vh;
   background-color: #13809b !important;
   font-weight: bold;
 }
 
 .nav-bar-brand {
+  display: none;
   font-family: "Comic Sans MS";
   font-size: 1.5rem;
 }
