@@ -3,6 +3,11 @@
   border-radius: 25px;
 }
 
+.product-img{
+  margin-top: 17px;
+  width: 129px;
+}
+
 .product-card:hover {
   background: rgba(255, 255, 255, 0.08);
 }
@@ -22,7 +27,7 @@
 
 .product-avail {
   position: absolute;
-  top: 25%;
+  top: 0;
   right: 10%;
 }
 

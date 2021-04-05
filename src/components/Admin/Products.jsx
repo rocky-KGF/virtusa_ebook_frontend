@@ -13,9 +13,8 @@ import {
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { addProduct } from "../../redux/actions/products";
 import "./css/products.css";
-import { add_Product } from "../../api";
+import { add_Product, getAllProducts } from "../../api";
 
 const Products = () => {
   const products = useSelector((state) => state.products);
@@ -45,9 +44,15 @@ const Products = () => {
 
   const add_product = async (e) => {
     e.preventDefault();
-    const status = await add_Product(product);
+    const status = await add_Product({
+      ...product,
+      description: product.description
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"'),
+    });
     if (status.error) alert("Try again later");
-    else dispatch(addProduct(product));
+    else {const data = await getAllProducts();
+      dispatch({type: "GET_PRODUCTS", payload: data})};
     toggleModal();
   };
 

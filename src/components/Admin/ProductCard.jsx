@@ -25,10 +25,15 @@ const ProductCard = ({ Product }) => {
 
   const saveEditedProduct = async (e) => {
     e.preventDefault();
-    const res = await edit_product(product);
+    const res = await edit_product({
+      ...product,
+      description: product.description
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"'),
+    });
     if (res.error) alert("Try again later");
-    else dispatch({type: "EDIT_PRODUCT", payload:product});
-    console.log({...product})
+    else dispatch({ type: "EDIT_PRODUCT", payload: product });
+    console.log({ ...product });
     toggleModal();
   };
 
@@ -51,7 +56,10 @@ const ProductCard = ({ Product }) => {
           <p className="product-desc">{Product.description}</p>
           <div className="product-avail">
             <p className="product-stock">Stock: {Product.stock}</p>
-            <p className="product-price">{"Rs. " + Product.price}</p>
+            <p className="product-price">
+              <span className="fa fa-inr fa-lg"></span>
+              {"  " + Product.price}
+            </p>
           </div>
         </div>
       </Col>
